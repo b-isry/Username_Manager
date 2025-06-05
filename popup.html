@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Username Manager</title>
+    <link rel="stylesheet" href="popup.css" />
+    <style>
+      #username-form {
+        display: none;
+        margin-top: 16px;
+        border: 1px solid #ccc;
+        padding: 12px;
+        background: #f9f9f9;
+      }
+      #usernames-list {
+        margin-bottom: 16px;
+        list-style: none;
+        padding: 0;
+      }
+      .form-group {
+        margin-bottom: 8px;
+      }
+      button {
+        margin-right: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <ul id="usernames-list">
+    </ul>
+    <button id="add-username-btn">Add new username</button>
+
+    <form id="username-form">
+      <div class="form-group">
+        <label for="platform">Platform Name:</label>
+        <input type="text" id="platform" name="platform" required />
+      </div>
+      <div class="form-group">
+        <label for="username">Username or URL:</label>
+        <input type="text" id="username" name="username" required />
+      </div>
+      <button type="submit">Save</button>
+      <button type="button" id="cancel-btn">Cancel</button>
+    </form>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
