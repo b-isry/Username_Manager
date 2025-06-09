@@ -46,44 +46,79 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function loadUsernames() {
-    list.innerHTML = '';
+    list.innerHTML = ''; 
     const usernames = JSON.parse(localStorage.getItem('usernames') || '[]');
-    usernames.forEach((item, idx) => {
-      const li = document.createElement('li');
-      li.textContent = `${item.platform}: ${item.username}`;
 
-      // Copy button
-      const copyBtn = document.createElement('button');
-      copyBtn.textContent = 'Copy';
-      copyBtn.style.marginLeft = '8px';
-      copyBtn.onclick = () => {
-        copyToClipboard(item.username, copyBtn);
-      };
-      li.appendChild(copyBtn);
+    if (usernames.length === 0) {
+      const messageLi = document.createElement('li');
+      messageLi.id = 'no-usernames-message'; 
+      messageLi.textContent = 'No URLs saved yet. Click "Add New URL" to get started!';
+      list.appendChild(messageLi);
+    } else {
+      usernames.forEach((item, idx) => {
+        const li = document.createElement('li');
 
-      const delBtn = document.createElement('button');
-      delBtn.textContent = 'Delete';
-      delBtn.style.marginLeft = '8px';
-      delBtn.onclick = () => {
-        usernames.splice(idx, 1);
-        localStorage.setItem('usernames', JSON.stringify(usernames));
-        loadUsernames();
-      };
-      li.appendChild(delBtn);
-      list.appendChild(li);
-    });
+        const detailsDiv = document.createElement('div');
+        detailsDiv.className = 'username-item-details';
+
+        const platformSpan = document.createElement('span');
+        platformSpan.className = 'username-item-platform';
+        platformSpan.textContent = item.platform;
+
+        const urlSpan = document.createElement('span');
+        urlSpan.className = 'username-item-url';
+        urlSpan.textContent = item.username;
+
+        detailsDiv.appendChild(platformSpan);
+        detailsDiv.appendChild(urlSpan);
+
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'username-item-actions';
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-btn';
+        const copyIconSpan = document.createElement('span');
+        copyIconSpan.className = 'icon-copy'; 
+        copyBtn.appendChild(copyIconSpan);
+        copyBtn.append(' Copy'); 
+        copyBtn.onclick = () => {
+          copyToClipboard(item.username, copyBtn);
+        };
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'delete-btn';
+        const deleteIconSpan = document.createElement('span');
+        deleteIconSpan.className = 'icon-delete'; 
+        delBtn.appendChild(deleteIconSpan);
+        delBtn.append(' Delete'); 
+        delBtn.onclick = () => {
+
+          const updatedUsernames = usernames.filter((_, index) => index !== idx);
+          localStorage.setItem('usernames', JSON.stringify(updatedUsernames));
+          loadUsernames(); 
+        };
+
+        actionsDiv.appendChild(copyBtn);
+        actionsDiv.appendChild(delBtn);
+
+        li.appendChild(detailsDiv);
+        li.appendChild(actionsDiv);
+
+        list.appendChild(li);
+      });
+    }
   }
 
   addBtn.onclick = () => {
-    form.style.display = 'block';
-    addBtn.style.display = 'none';
+    form.classList.remove('hidden'); 
+    addBtn.style.display = 'none';  
     platformInput.value = '';
     usernameInput.value = '';
   };
 
   cancelBtn.onclick = () => {
-    form.style.display = 'none';
-    addBtn.style.display = 'block';
+    form.classList.add('hidden'); 
+    addBtn.style.display = '';   
   };
 
   form.onsubmit = (e) => {
@@ -94,10 +129,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const usernames = JSON.parse(localStorage.getItem('usernames') || '[]');
     usernames.push({ platform, username });
     localStorage.setItem('usernames', JSON.stringify(usernames));
-    form.style.display = 'none';
-    addBtn.style.display = 'block';
+    form.classList.add('hidden'); 
+    addBtn.style.display = '';    
     loadUsernames();
   };
 
   loadUsernames();
+
+  const githubLink = document.getElementById('github-link');
+  if (githubLink) {
+    githubLink.addEventListener('click', (event) => {
+      event.preventDefault(); 
+      chrome.tabs.create({ url: githubLink.href });
+    });
+  }
 });
